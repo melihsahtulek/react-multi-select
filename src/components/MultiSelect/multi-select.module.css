@@ -1,0 +1,13 @@
+.select_button {
+  display: flex;
+  width: 100%;
+  height: 2.5rem;
+  border: 1px solid red;
+  border-radius: 3px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+}
