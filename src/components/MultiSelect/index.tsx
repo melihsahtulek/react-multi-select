@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styles from '@/components/MultiSelect/multi-select.module.css';
 
 export const MultiSelectContext = createContext<any>(null);
 
-function SelectButton() {
-  const { setSearchValue, selectedItems, setSelectedItems } = useContext(MultiSelectContext);
+const SelectButton = () => {
+  const { searchValue, setSearchValue, selectedItems, setSelectedItems, filtered, optionList, setOptionList, ref } =
+    useContext(MultiSelectContext);
   const [inputFocus, setInputFocus] = useState(false);
 
   return (
@@ -16,15 +17,30 @@ function SelectButton() {
       }}>
       <div className={styles.selected_items}>
         {selectedItems?.map((item: Option, index: number) => (
-          <span key={index} className={styles.selected_item} onClick={() => {}}>
+          <span
+            key={index}
+            className={styles.selected_item}
+            onClick={(e) => {
+              e.preventDefault();
+              const unselectItemIndex = selectedItems.findIndex((elem: Option) => elem.value === item.value);
+              if (unselectItemIndex > -1) {
+                const copyArr = [...selectedItems];
+                const elem = copyArr.splice(unselectItemIndex, 1);
+                setSelectedItems(copyArr);
+                setOptionList([...optionList, ...elem]);
+                ref.current.focus();
+              }
+            }}>
             {item.label}
           </span>
         ))}
       </div>
       <input
+        ref={ref}
         id="search_inp"
         type="text"
         autoFocus={true}
+        value={searchValue}
         onFocus={() => {
           setInputFocus(true);
         }}
@@ -38,15 +54,14 @@ function SelectButton() {
       />
     </label>
   );
-}
+};
 
 function SelectBody() {
-  const { optionList, setOptionList, filtered, selectedItems, setSelectedItems } =
+  const { optionList, setOptionList, filtered, selectedItems, setSelectedItems, setSearchValue, ref } =
     useContext(MultiSelectContext);
 
-  console.log('filtered body', filtered);
-  if (filtered.length === 0) {
-    return <div>Bitti</div>;
+  if (!(filtered.length > 0)) {
+    return <div className={styles.noItemAreThere}>No Data...</div>;
   }
 
   return (
@@ -63,6 +78,8 @@ function SelectBody() {
               const copyArr = [...filtered];
               copyArr.splice(itemIndex, 1);
               setOptionList(copyArr);
+              setSearchValue('');
+              ref.current.focus();
             }
           }}>
           {item.label}
@@ -85,6 +102,7 @@ type MultiSelectProps = {
 };
 
 export default function MultiSelect({ options }: MultiSelectProps) {
+  const ref = useRef(null);
   const [selectIsOpen, setSelectIsOpen] = useState<boolean>(false);
   const [optionList, setOptionList] = useState<Option[]>(options);
 
@@ -109,7 +127,8 @@ export default function MultiSelect({ options }: MultiSelectProps) {
         setSearchValue,
         filtered,
         selectedItems,
-        setSelectedItems
+        setSelectedItems,
+        ref
       }}>
       <div className={styles.container}>
         <SelectButton />

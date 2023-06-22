@@ -6,6 +6,7 @@
   --gray-300: #d1d5db;
   --gray-900: #030712;
   --blue: #1d4ed8;
+  --red: #dc2626;
 }
 
 .container {
@@ -38,6 +39,10 @@
 .selected_items {
   display: flex;
   gap: 5px;
+}
+
+.selected_item:hover {
+  cursor: pointer;
 }
 
 .selected_item {
@@ -86,4 +91,14 @@
 .active_item {
   background-color: var(--blue);
   color: var(--white);
+}
+
+.noItemAreThere {
+  background-color: var(--red);
+  color: var(--white);
+  padding: 0.5rem;
+  text-align: center;
+  margin-top: 10px;
+  border-radius: 3px;
+  font-weight: 600;
 }
