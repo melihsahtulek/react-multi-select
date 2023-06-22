@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap');
 
 *,
 *::before,
@@ -10,7 +10,7 @@
 }
 
 html {
-  font-family: "Quicksand", sans-serif;
+  font-family: 'Quicksand', sans-serif;
   font-size: 17px;
   min-height: 100%;
 }
@@ -21,4 +21,5 @@ body {
   font-family: inherit;
   font-size: inherit;
   line-height: 1.15;
+  padding: 2.5rem;
 }
