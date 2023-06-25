@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import '@/components/MultiSelect/multi-select.css';
 
-type Option = {
+export type Option = {
   label: string;
   value: string;
 };
@@ -11,9 +11,9 @@ type MultiSelectProps = {
   searchable?: boolean;
   multiSelectable?: boolean;
   disabled?: boolean;
+  onChangeState: any;
 };
 
-/* Create Context API */
 export const MultiSelectContext = createContext<any>(null);
 
 function SelectedItems() {
@@ -76,13 +76,9 @@ function SelectInput() {
         value={searchValue}
         onFocus={() => {
           setInputFocus(true);
-          // setSelectIsOpen(!selectIsOpen);
         }}
         onClick={() => {
           setSelectIsOpen(!selectIsOpen);
-        }}
-        onBlur={() => {
-          // setInputFocus(false);
         }}
         onChange={(e) => {
           setSearchValue(e.currentTarget.value.trim());
@@ -98,62 +94,23 @@ function SelectInput() {
 }
 
 function SelectButton() {
-  const {
-    inputFocus,
-    setInputFocus,
-    searchValue,
-    setSearchValue,
-    selectedItems,
-    setSelectedItems,
-    optionList,
-    setOptionList,
-    selectButtonRef,
-    selectIsOpen,
-    setSelectIsOpen,
-    multiSelectable,
-    searchable
-  } = useContext(MultiSelectContext);
-
-  const id = useId();
+  const { inputFocus, selectButtonRef, selectIsOpen, setSelectIsOpen } = useContext(MultiSelectContext);
 
   return (
-    <label
-      htmlFor={id}
-      className={'select_btn_container'}
-      onClick={() => {
-        // setSelectIsOpen(!selectIsOpen);
-      }}
-      style={{
-        borderColor: inputFocus ? 'var(--blue)' : 'var(--gray-300)'
-      }}>
-      <div className={'one_selected'}>{selectedItems?.[0]?.label}</div>
-      <input
-        ref={selectButtonRef}
-        id={id}
-        type="text"
-        disabled={searchable ? false : true}
-        autoFocus={false}
-        value={searchValue}
-        onFocus={() => {
-          setInputFocus(true);
-          // setSelectIsOpen(!selectIsOpen);
+    <div className="select_btn_container">
+      <SelectedItems />
+      <button
+        style={{
+          borderColor: inputFocus ? 'var(--blue)' : 'var(--gray-300)',
+          width: '100%',
+          backgroundColor: 'transparent'
         }}
+        type="button"
+        ref={selectButtonRef}
         onClick={() => {
           setSelectIsOpen(!selectIsOpen);
-        }}
-        onBlur={() => {
-          // setInputFocus(false);
-        }}
-        onChange={(e) => {
-          setSearchValue(e.currentTarget.value.trim());
-          setSelectIsOpen(true);
-          if (!multiSelectable) {
-            setSelectedItems([]);
-          }
-        }}
-        className={'select_input'}
-      />
-    </label>
+        }}></button>
+    </div>
   );
 }
 
@@ -171,7 +128,7 @@ function SelectBody() {
     multiSelectable
   } = useContext(MultiSelectContext);
 
-  if (optionList.length < 1) {
+  if (optionList.length < 1 && selectIsOpen) {
     return <div className={'noItemAreThere'}>Empty List</div>;
   }
 
@@ -212,7 +169,12 @@ function SelectBody() {
   );
 }
 
-export default function MultiSelect({ options = [], multiSelectable = true, searchable = true }: MultiSelectProps) {
+export default function MultiSelect({
+  options = [],
+  multiSelectable = true,
+  searchable = true,
+  onChangeState
+}: MultiSelectProps) {
   const selectRef = useRef(null);
   const selectButtonRef = useRef(null);
   const [selectIsOpen, setSelectIsOpen] = useState<boolean>(false);
@@ -233,10 +195,6 @@ export default function MultiSelect({ options = [], multiSelectable = true, sear
         setSearchValue('');
       }
     });
-
-    return () => {
-      document.removeEventListener('click', () => {});
-    };
   }, []);
 
   const filtered = useMemo(() => {
@@ -245,6 +203,12 @@ export default function MultiSelect({ options = [], multiSelectable = true, sear
     }
     return optionList.filter((item: Option) => item.value.includes(searchValue));
   }, [searchValue, optionList]);
+
+  useEffect(() => {
+    if (selectedItems.length > 0) {
+      onChangeState(selectedItems);
+    }
+  }, [selectedItems]);
 
   return (
     <MultiSelectContext.Provider
@@ -262,7 +226,8 @@ export default function MultiSelect({ options = [], multiSelectable = true, sear
         inputFocus,
         setInputFocus,
         multiSelectable,
-        searchable
+        searchable,
+        onChangeState
       }}>
       <div className={'select_container'} ref={selectRef}>
         {searchable ? <SelectInput /> : <SelectButton />}
