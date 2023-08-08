@@ -205,10 +205,10 @@ export default function MultiSelect({
   }, [searchValue, optionList]);
 
   useEffect(() => {
-    if (selectedItems.length > 0) {
+    if (selectedItems.length > -1) {
       onChangeState(selectedItems);
     }
-  }, [selectedItems]);
+  }, [selectedItems, setSelectedItems]);
 
   return (
     <MultiSelectContext.Provider
