@@ -1,8 +1,10 @@
 **tech stacks**
+
 react,
 vite,
 eslint,
 typescript,
-css
+css,
+prettier
 
 ![Demo Preview](public/demo.png)
