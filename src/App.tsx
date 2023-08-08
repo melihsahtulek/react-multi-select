@@ -40,7 +40,6 @@ function App() {
         disabled={false}
         options={options}
         onChangeState={(data: Option[]) => {
-          console.log(data);
           setSelectedItems(data as never);
         }}
       />
