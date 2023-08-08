@@ -1,4 +1,5 @@
 import MultiSelect, { Option } from '@/components/MultiSelect';
+import { useState } from 'react';
 
 const options = [
   {
@@ -28,21 +29,26 @@ const options = [
 ];
 
 function App() {
+  const [selectedItems, setSelectedItems] = useState([]);
+
   return (
     <div>
-      MultiSelect: true, searchable: true
+      <b>MultiSelect: true, searchable: true</b>
       <MultiSelect
         searchable={true}
         multiSelectable={true}
         disabled={false}
         options={options}
         onChangeState={(data: Option[]) => {
-          console.log('***Selected Items***');
-          Object.values(data).forEach((elem) => {
-            console.log(elem);
-          });
+          setSelectedItems(data as never);
         }}
       />
+      <br />
+      <pre>{JSON.stringify(selectedItems, null, 2)}</pre>
+      <br />
+      <b>
+        dev. by <a href="https://github.com/melihsahtulek">melihsahtulek</a>
+      </b>
     </div>
   );
 }
